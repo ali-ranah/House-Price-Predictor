@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AxiosRequest from '../../AxiosRequest/AxiosRequest';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import {faGoogle } from '@fortawesome/free-brands-svg-icons';
@@ -88,7 +87,6 @@ const Login = () => {
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <ToastContainer />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full p-8">
                 <section className="flex justify-center items-center">
                     <img src={img} alt="Side Image" className="max-w-60 h-auto" />

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AxiosRequest from '../../AxiosRequest/AxiosRequest';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Input, Button } from '@material-tailwind/react';
@@ -65,7 +64,7 @@ const ResetPassword = () => {
             toast.promise(
                 promise,
                 {
-                    pending: 'Resending verification code...',
+                    loading: 'Resending verification code...',
                     success: 'Verification code resent successfully',
                     error: 'Failed to resend verification code'
                 }
@@ -78,7 +77,6 @@ const ResetPassword = () => {
     };
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <ToastContainer />
             <section className="flex justify-center items-center">
                 <div className="flex flex-col max-w-lg w-full p-8 bg-white rounded-lg shadow-md">
                     <h2 className='text-2xl font-bold text-center mb-6'>Reset Password</h2>

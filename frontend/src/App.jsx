@@ -6,15 +6,18 @@ import ForgotPassword from '../src/Components/Auth/Forgot/ForgotPassword';
 import ResetPassword from '../src/Components/Auth/Reset/ResetPassword';
 import Home from '../src/Components/Home/Home';
 import Profile from '../src/Components/Profile/Profile';
-
 import './index.css'
 import Layout from './Components/Layout/Layout';
 import CreateListing from './Components/Property/Selling/CreateListing/CreateListing';
 import PredictPrice from './Components/Prediction/PredictPrice/PredictPrice';
+import { Toaster } from 'react-hot-toast';
+import MyBids from './Components/MyBids/MyBids';
+import MyProperties from './Components/MyProperties/MyProperties';
 
 const App = () => {
     return (
         <Router>
+            <Toaster/>
             <Routes>
                 <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="/login" element={<Login />} />
@@ -32,6 +35,16 @@ const App = () => {
                 <Route path="/predict-price" element={
                     <Layout>
                 <PredictPrice />
+                </Layout>
+                } />
+                 <Route path="/my-bids" element={
+                    <Layout>
+                <MyBids />
+                </Layout>
+                } />
+                 <Route path="/my-properties" element={
+                    <Layout>
+                <MyProperties />
                 </Layout>
                 } />
                 <Route path="/profile" element={

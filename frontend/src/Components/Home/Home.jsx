@@ -34,9 +34,6 @@ const Home = () => {
                     </div>
                     <Carousels />
                     <BookingCard />
-                    <Button color="blue" className="py-3 px-8 mt-[2vh] shadow-lg hover:shadow-2xl transform hover:scale-105 transition-transform duration-300">
-                        Get Started
-                    </Button>
                 </div>
             </div>
             <Footer />

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import AxiosRequest from '../../AxiosRequest/AxiosRequest';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import img from '../../../../images/img.png';
 import {Input,Button} from "@material-tailwind/react"
@@ -25,7 +24,7 @@ const ForgotPassword = () => {
             toast.promise(
                 promise,
                 {
-                    pending: 'Sending Verification Code...',
+                    loading: 'Sending Verification Code...',
                     success: 'Verification code sent successfully',
                     error: 'Failed to send verification code'
                 }
@@ -45,7 +44,6 @@ const ForgotPassword = () => {
     
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <ToastContainer />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl w-full p-8">
             <section className="flex justify-center items-center">
             <img src={img} alt="Side Image" className="max-w-60 h-auto" />

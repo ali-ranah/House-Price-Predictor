@@ -4,7 +4,7 @@ import { Button } from '@/Components/ui/button';
 import {Input} from '@/Components/ui/input'; 
 import { Spinner } from '@material-tailwind/react'; // Adjust path as needed
 import AxiosRequest from '../../AxiosRequest/AxiosRequest'
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 const PredictPrice = () => {
   const [location, setLocation] = useState('');
@@ -58,7 +58,6 @@ const PredictPrice = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500">
-        <Toaster/>
       <Card className="w-full max-w-md p-6 shadow-lg">
         <CardHeader>
           <h1 className="text-2xl font-semibold text-center">House Price Prediction</h1>

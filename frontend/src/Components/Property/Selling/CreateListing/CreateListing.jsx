@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import AxiosRequest from '../../../AxiosRequest/AxiosRequest';
 import { useSelector } from "react-redux";
 import { selectToken } from "../../../State/Reducers/tokenSlice";
+import toast from 'react-hot-toast'
 
 const CreateListing = () => {
   const [formData, setFormData] = useState({
@@ -11,19 +12,17 @@ const CreateListing = () => {
     description: "",
     price: "",
     location: "",
-    imageUrl: "",
     bedrooms: "",
     bathrooms: "",
-    parkingSpaces: "", // Changed to handle "Yes/No" values
+    parkingSpaces: "", 
     area: "",
     furnished: "",
     condition: "",
     gasAvailable: "",
     additionalDetails: "",
   });
-
+  const [imageFile, setImageFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
   const storedToken = localStorage.getItem('token');
   const token = useSelector(selectToken) || storedToken;
 
@@ -32,28 +31,65 @@ const CreateListing = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+          setImageFile(file);
+      }
+  };
+
   const handleSelectChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage("");
+    const data = new FormData();
+    
+    // Append form data
+    Object.keys(formData).forEach(key => data.append(key, formData[key]));
+    
+    // Append image file if it exists
+    if (imageFile) {
+        data.append("image", imageFile);
+    } else {
+        console.log('No image file selected.');
+    }
 
     try {
-      const response = await AxiosRequest.post("/api/bns/property", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setMessage(response.data.message);
+        const response = await AxiosRequest.post("/api/bns/property", data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            }
+        });
+        toast.success(response.data.message);
+
+        // Reset form data
+        setFormData({
+            title: "",
+            description: "",
+            price: "",
+            location: "",
+            bedrooms: "",
+            bathrooms: "",
+            parkingSpaces: "",
+            area: "",
+            furnished: "",
+            condition: "",
+            gasAvailable: "",
+            additionalDetails: ""
+        });
+        setImageFile(null);
     } catch (error) {
-      console.log(error);
-      setMessage("Failed to list property.");
+        console.error('Error response:', error.response ? error.response.data : error.message);
+        toast.error("Failed to list property");
+    } finally {
+        setLoading(false); // Ensure loading is set to false in any case
     }
-    setLoading(false);
-  };
+};
+  
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
@@ -68,20 +104,6 @@ const CreateListing = () => {
             List Property for Sale
           </h2>
 
-          {message && (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className={`text-center mb-4 ${
-                message.includes("successfully")
-                  ? "text-green-500"
-                  : "text-red-500"
-              }`}
-            >
-              {message}
-            </motion.p>
-          )}
-
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <Input
@@ -90,6 +112,7 @@ const CreateListing = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
+                className="focus:ring-0"
                 required
               />
             </div>
@@ -101,6 +124,9 @@ const CreateListing = () => {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
+                rows={4}
+                resize={true}
+                className="w-full focus:ring-0"
                 required
               />
             </div>
@@ -113,6 +139,7 @@ const CreateListing = () => {
                 type="number"
                 value={formData.price}
                 onChange={handleChange}
+                className="focus:ring-0"
                 required
               />
             </div>
@@ -124,6 +151,7 @@ const CreateListing = () => {
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
+                className="focus:ring-0"
                 required
               />
             </div>
@@ -131,10 +159,11 @@ const CreateListing = () => {
             <div className="mb-4">
               <Input
                 variant="outlined"
-                label="Image URL"
-                name="imageUrl"
-                value={formData.imageUrl}
-                onChange={handleChange}
+                label="Upload Image of the Property"
+                type="file"
+                name="image"
+                onChange={handleFileChange}
+                className="focus:ring-0"
                 required
               />
             </div>
@@ -147,6 +176,7 @@ const CreateListing = () => {
                 type="number"
                 value={formData.bedrooms}
                 onChange={handleChange}
+                className="focus:ring-0"
                 required
               />
             </div>
@@ -159,6 +189,7 @@ const CreateListing = () => {
                 type="number"
                 value={formData.bathrooms}
                 onChange={handleChange}
+                className="focus:ring-0"
                 required
               />
             </div>
@@ -168,6 +199,7 @@ const CreateListing = () => {
                 label="Parking Spaces Available"
                 value={formData.parkingSpaces}
                 onChange={(value) => handleSelectChange("parkingSpaces", value)}
+                className="focus:ring-0"
                 required
               >
                 <Option value="Yes">Yes</Option>
@@ -180,6 +212,7 @@ const CreateListing = () => {
                 label="Area (in Marla/Kanal)"
                 value={formData.area}
                 onChange={(value) => handleSelectChange("area", value)}
+                className="focus:ring-0"
                 required
               >
                 <Option value="1 Marla">1 Marla</Option>
@@ -199,6 +232,7 @@ const CreateListing = () => {
                 label="Furnished"
                 value={formData.furnished}
                 onChange={(value) => handleSelectChange("furnished", value)}
+                className="focus:ring-0"
                 required
               >
                 <Option value="Yes">Yes</Option>
@@ -211,6 +245,7 @@ const CreateListing = () => {
                 label="Condition"
                 value={formData.condition}
                 onChange={(value) => handleSelectChange("condition", value)}
+                className="focus:ring-0"
                 required
               >
                 <Option value="New">New</Option>
@@ -224,6 +259,7 @@ const CreateListing = () => {
                 label="Gas Available"
                 value={formData.gasAvailable}
                 onChange={(value) => handleSelectChange("gasAvailable", value)}
+                className="focus:ring-0"
                 required
               >
                 <Option value="Yes">Yes</Option>
@@ -238,6 +274,9 @@ const CreateListing = () => {
                 name="additionalDetails"
                 value={formData.additionalDetails}
                 onChange={handleChange}
+                rows={4}
+                resize={true}
+                className="w-full focus:ring-0"
               />
             </div>
 

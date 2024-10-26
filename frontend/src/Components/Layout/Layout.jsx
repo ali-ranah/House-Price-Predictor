@@ -8,7 +8,7 @@ const Layout = ({ children }) => {
         <header className="flex items-center justify-center">
           <Header />
         </header>
-        <div className="md:flex-grow overflow-y-auto">
+        <div className="md:flex-grow overflow-y-auto dashboard-1-scrollbar">
           {children}
         </div>
       </main>
