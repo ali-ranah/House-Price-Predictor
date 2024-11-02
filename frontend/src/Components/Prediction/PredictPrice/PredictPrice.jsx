@@ -56,9 +56,17 @@ const PredictPrice = () => {
     }).format(price)}`;
 };
 
+const handleNumericInputChange = (setter) => (e) => {
+  const value = e.target.value;
+  // Ensure value is a valid number or empty
+  if (value === '' || (Number(value) > 0 && /^\d+(\.\d+)?$/.test(value))) {
+    setter(value);
+  }
+};
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-green-400 to-blue-500">
-      <Card className="w-full max-w-md p-6 shadow-lg">
+    <div className="flex items-center justify-center min-h-screen bg-[#FEF9F2]">
+      <Card className="p-8 w-full max-w-md shadow-lg shadow-black rounded-lg bg-white transform transition duration-300 hover:-translate-y-2 hover:shadow-3xl">
         <CardHeader>
           <h1 className="text-2xl font-semibold text-center">House Price Prediction</h1>
         </CardHeader>
@@ -74,21 +82,21 @@ const PredictPrice = () => {
               type="number"
               placeholder="Size (sq ft)"
               value={size}
-              onChange={(e) => setSize(e.target.value)}
+              onChange={handleNumericInputChange(setSize)}
               className="mb-4"
             />
             <Input
               type="number"
               placeholder="Bedrooms"
               value={bedrooms}
-              onChange={(e) => setBedrooms(e.target.value)}
+              onChange={handleNumericInputChange(setBedrooms)}
               className="mb-4"
             />
             <Input
               type="number"
               placeholder="Bathrooms"
               value={bathrooms}
-              onChange={(e) => setBathrooms(e.target.value)}
+              onChange={handleNumericInputChange(setBathrooms)}
               className="mb-4"
             />
           </div>

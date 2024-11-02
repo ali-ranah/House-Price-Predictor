@@ -118,7 +118,7 @@ navigate('/login')
   );
  
   return (
-    <Navbar className="mx-auto min-w-screen !bg-black px-4 py-2 lg:px-8 lg:py-4">
+    <Navbar className="mx-auto min-w-screen !bg-[#789DBC] px-4 py-2 lg:px-8 lg:py-4">
       <div className="mx-auto flex w-full flex-wrap items-center gap-[4vw] justify-between text-blue-gray-900">
         <a href='/home'>
         <img 
@@ -136,7 +136,7 @@ navigate('/login')
               containerProps={{
                 className: "min-w-[288px]",
               }}
-              className="focus:ring-0 pl-9 !border-1 !border-white !text-white placeholder:text-grey-700 focus:!border-white"
+              className="focus:ring-0 pl-9 !border-1 !border-white !text-white placeholder:text-white focus:!border-white"
               labelProps={{
                 className: "before:content-none after:content-none",
               }}

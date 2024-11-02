@@ -7,6 +7,9 @@ const router = express.Router();
 // Get all available properties (for public viewing)
 router.get('/properties', propertyController.getAllProperties);
 
+// hide bid option from owner
+router.get('/shouldBidBeShown',authMiddleware, propertyController.getPropertiesWithBidOption);
+
 // Get a specific property by ID
 router.get('/property/:id', propertyController.getPropertyById);
 

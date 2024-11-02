@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { Button, Input, Textarea, Card, Select, Option } from "@material-tailwind/react";
+import React, { useEffect, useState } from "react";
+import { Button, Input, Textarea, Card, Select, Option, Dialog, Typography, DialogBody } from "@material-tailwind/react";
 import { motion } from "framer-motion";
 import AxiosRequest from '../../../AxiosRequest/AxiosRequest';
 import { useSelector } from "react-redux";
 import { selectToken } from "../../../State/Reducers/tokenSlice";
 import toast from 'react-hot-toast'
+import { useNavigate } from "react-router-dom";
 
 const CreateListing = () => {
   const [formData, setFormData] = useState({
@@ -25,10 +26,29 @@ const CreateListing = () => {
   const [loading, setLoading] = useState(false);
   const storedToken = localStorage.getItem('token');
   const token = useSelector(selectToken) || storedToken;
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false); // New state for login dialog
+  const navigate = useNavigate();
+
+
+  useEffect(() => {
+    if (!token) {
+      setLoginDialogOpen(true); // Open login dialog if token is missing
+      return;
+    }
+  },[token])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  
+    // Validate numeric fields to not allow values less than 1
+    if (['price', 'bedrooms', 'bathrooms'].includes(name)) {
+      // Check if the input value is empty or a valid number greater than 1
+      if (value === '' || (Number(value) > 0 && /^\d+(\.\d+)?$/.test(value))) {
+        setFormData({ ...formData, [name]: value });
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleFileChange = (e) => {
@@ -42,6 +62,13 @@ const CreateListing = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleNavigateLogin = () => {
+    navigate('/login');
+  };
+
+  const handleNavigateHome = () => {
+    navigate('/home');
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -92,14 +119,14 @@ const CreateListing = () => {
   
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50">
+    <div className="flex justify-center items-center min-h-screen bg-[#FEF9F2]">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="max-w-lg w-full p-6 bg-white shadow-md rounded-lg"
+        className="max-w-lg w-full p-6"
       >
-        <Card className="p-8">
+       <Card className="p-8 min-w-screen shadow-lg shadow-black rounded-lg bg-white transform transition duration-300 hover:-translate-y-2 hover:shadow-3xl">
           <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
             List Property for Sale
           </h2>
@@ -126,8 +153,7 @@ const CreateListing = () => {
                 onChange={handleChange}
                 rows={4}
                 resize={true}
-                className="w-full focus:ring-0"
-                required
+                className="w-full focus:!ring-0"
               />
             </div>
 
@@ -298,6 +324,25 @@ const CreateListing = () => {
           </form>
         </Card>
       </motion.div>
+      {/* Login required dialog */}
+      <Dialog open={loginDialogOpen} handler={() => setLoginDialogOpen(false)} className="max-w-sm">
+          <div className='flex items-center justify-center text-center mt-4 mb-4'>
+          <Typography variant="h5" className='text-black'>Login Required</Typography>
+          </div>
+        <DialogBody divider>
+          <Typography color="gray" className="text-center">
+            You need to log in to sell your property.
+          </Typography>
+          <div className="flex justify-around mt-4">
+            <Button className='bg-black !shadow-none' onClick={handleNavigateLogin}>
+              Go to Login
+            </Button>
+            <Button className='bg-black !shadow-none' onClick={handleNavigateHome}>
+              Go to Home
+            </Button>
+          </div>
+        </DialogBody>
+      </Dialog>
     </div>
   );
 };

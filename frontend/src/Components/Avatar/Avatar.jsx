@@ -214,8 +214,9 @@ const AvatarWithDropdown = () => {
           dispatch(setIsLoggedIn(null));
           localStorage.removeItem('isLoggedIn');
           dispatch(removeTokenAction());
+          localStorage.removeItem('userId');
           closeMenu();
-          navigate('/home');
+          navigate('/login');
           console.log("User signed out");
         }, 2000);
         Swal.fire(

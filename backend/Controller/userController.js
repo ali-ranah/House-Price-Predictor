@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
 const User = require('../Model/userModel');
 const GoogleUser = require('../Model/googleUser');
+const sendEmail = require('../utils/emailUtils');
 require('dotenv').config();
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -42,6 +43,7 @@ exports.login = async (req, res) => {
         }
         // Generate JWT token
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        console.log(token);
         res.status(200).json({ user, token });
     } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
@@ -142,15 +144,20 @@ exports.forgotPassword = async (req, res) => {
         user.verificationCodeExpiry = Date.now() + 5 * 60 * 1000; // Code expires in 5 minutes
 
         await user.save();
-        sendVerificationEmail(user.email, verificationCode, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-                res.status(500).json({ message: 'Error sending verification code' });
-            } else {
-                console.log('Email sent:', info.response);
-                res.status(200).json({ message: 'Verification code sent successfully' });
-            }
-        });
+        try {
+             await sendEmail({
+              email: user.email,
+              subject: 'Password Reset Request',
+              verificationCode,
+              type: 'verify',
+              name: user.name,
+            });
+            res.status(200).json({ message: 'Verification code sent successfully' });
+          } catch (error) {
+            console.error('Error sending email:', error);
+            res.status(500).json({ message: 'Error sending verification code' });
+          }
+          
         
     } catch (error) {
         console.error('Forgot password failed:', error);
@@ -180,6 +187,12 @@ exports.resetPassword = async (req, res) => {
         user.verificationCode = null;
         user.verificationCodeExpiry = null;
         await user.save();
+        await sendEmail({
+             email: user.email,
+             subject: 'Password Reset Successful',
+             type: 'reset',
+             name: user.name,
+           });
 
         res.status(200).json({ message: 'Password reset successfully' });
     } catch (error) {
@@ -204,15 +217,19 @@ exports.resendVerificationCode = async (req, res) => {
         await user.save();
 
         // Send verification email
-        sendVerificationEmail(email, user.verificationCode, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-                res.status(500).json({ message: 'Error sending verification code' });
-            } else {
-                console.log('Email sent:', info.response);
-                res.status(200).json({ message: 'Verification code sent successfully' });
-            }
-        });
+        try {
+            await sendEmail({
+             email: user.email,
+             subject: 'Password Reset Request',
+             verificationCode:  user.verificationCode,
+             type: 'verify',
+             name: user.name,
+           });
+           res.status(200).json({ message: 'Verification code sent successfully' });
+         } catch (error) {
+           console.error('Error sending email:', error);
+           res.status(500).json({ message: 'Error sending verification code' });
+         }
     } catch (error) {
         console.error('Failed to resend verification code:', error);
         res.status(500).json({ message: 'Failed to resend verification code' });

@@ -64,9 +64,9 @@ const Login = () => {
                 password: formData.password
             });
             if(response && response.status === 200){
-            console.log('Login successful:', response.data);
             dispatch(setEmailAction(formData.email))
             dispatch(setTokenAction(response.data.token)); // Save the token in Redux state
+            localStorage.setItem('userId',response.data.user._id);
             console.log('Token',response.data.token);
             toast.success('Login successful');
            setTimeout(()=>{

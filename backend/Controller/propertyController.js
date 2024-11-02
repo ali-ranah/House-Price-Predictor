@@ -4,12 +4,35 @@ const Property = require('../Model/propertyModel');
 exports.getAllProperties = async (req, res) => {
     try {
         // Find all unsold properties
-        const properties = await Property.find({ isSold: false }).populate('owner', 'name email');
+        const properties = await Property.find({ isSold: false }).populate('owner', 'name email').populate('bids.buyer', 'name email');
         res.status(200).json(properties);
     } catch (error) {
         res.status(500).json({ message: 'Error retrieving properties', error });
     }
 };
+
+exports.getPropertiesWithBidOption = async (req, res) => {
+    const userId = req.user._id;
+    try {
+        // Fetch properties and populate owner information
+        const properties = await Property.find({ isSold: false })
+            .populate('owner', 'name email');
+
+        // Filter properties to determine bid option availability
+        const propertiesWithBidOption = properties.map(property => {
+            const isOwner = property.owner._id.toString() === userId;
+            return {
+                ...property.toObject(),
+                canBid: !isOwner  // Add a `canBid` property based on ownership
+            };
+        });
+console.log('Properties with bid option ' , propertiesWithBidOption);
+        res.status(200).json(propertiesWithBidOption);
+    } catch (error) {
+        res.status(500).json({ message: 'Error retrieving properties with bid option', error });
+    }
+};
+
 
 // Get a specific property by ID
 exports.getPropertyById = async (req, res) => {
