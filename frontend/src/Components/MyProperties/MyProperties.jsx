@@ -27,6 +27,8 @@ const MyProperties = () => {
   const token = useSelector(selectToken) || localStorage.getItem('token');
   const navigate = useNavigate();
 
+  console.log('Auth',token);
+
 
   useEffect(() => {
     if (!token) {
@@ -147,6 +149,24 @@ const MyProperties = () => {
                 <Button size="sm" color="blue" onClick={() => handleOpenDialog(property)}>
                   View Bids
                 </Button>
+                {property.bids.some(bid => bid.status === 'accepted') && (
+                  <Button
+                    size="sm"
+                    color="green"
+                    onClick={() =>
+                      navigate('/chat', {
+                        state: {
+                          buyer: property.bids.find(bid => bid.status === 'accepted').buyer,
+                          seller: property.owner,
+                          propertyId: property._id,
+                        },
+                      })
+                    }
+                  >
+                    Chat
+                  </Button>
+                )}
+
               </CardFooter>
             </Card>
           ))}

@@ -4,74 +4,78 @@ const propertySchema = new mongoose.Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: true,
     },
     title: {
         type: String,
-        required: true
+        required: true,
     },
     description: {
         type: String,
-        required: true
+        required: true,
     },
     price: {
         type: Number,
-        required: true
+        required: true,
     },
     location: {
         type: String,
-        required: true
+        required: true,
     },
     imageUrl: {
         type: String,
     },
     dateListed: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     },
     isSold: {
         type: Boolean,
-        default: false
+        default: false,
+    },
+    buyer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
     },
     bedrooms: {
         type: Number,
-        required: true
+        required: true,
     },
     bathrooms: {
         type: Number,
-        required: true
+        required: true,
     },
     parkingSpaces: {
-        type: String,  // Number of parking spaces
-        required: true
+        type: String,
+        required: true,
     },
     area: {
-        type: String,  // Property area in square feet or meters
-        required: true
+        type: String,
+        required: true,
     },
     furnished: {
-        type: String,  // Whether the property is furnished or not
-        required: true
+        type: String,
+        required: true,
     },
     condition: {
-        type: String,  // Condition of the house (e.g., 'New', 'Renovated', 'Needs Work')
-        required: true
+        type: String,
+        required: true,
     },
     gasAvailable: {
-        type: String,  // Whether gas is available in the property
-        required: true
+        type: String,
+        required: true,
     },
     additionalDetails: {
-        type: String,  // Any extra details the owner wants to add
+        type: String,
     },
     bids: [
         {
             buyer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
             offerPrice: { type: Number },
-            status: { type: String, default: 'pending' },  // Can be 'pending', 'accepted', 'rejected'
-            placedAt: { type: Date, default: Date.now }
-        }
-    ]
+            status: { type: String, default: 'pending' }, // Can be 'pending', 'accepted', 'rejected'
+            placedAt: { type: Date, default: Date.now },
+        },
+    ],
 });
 
 module.exports = mongoose.model('Property', propertySchema);

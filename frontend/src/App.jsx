@@ -13,6 +13,7 @@ import PredictPrice from './Components/Prediction/PredictPrice/PredictPrice';
 import { Toaster } from 'react-hot-toast';
 import MyBids from './Components/MyBids/MyBids';
 import MyProperties from './Components/MyProperties/MyProperties';
+import Messaging from './Components/Messaging/Messaging';
 
 const App = () => {
     return (
@@ -45,6 +46,11 @@ const App = () => {
                  <Route path="/my-properties" element={
                     <Layout>
                 <MyProperties />
+                </Layout>
+                } />
+                <Route path="/chat" element={
+                    <Layout>
+                <Messaging />
                 </Layout>
                 } />
                 <Route path="/profile" element={

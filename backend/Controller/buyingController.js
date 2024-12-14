@@ -108,18 +108,21 @@ exports.acceptOffer = async (req, res) => {
             }
         });
 
-        // Mark the property as sold
+        // Mark the property as sold and assign buyer
         property.isSold = true;
+        property.buyer = bid.buyer;
 
         // Save the updated property
         await property.save();
 
+        // Notify the buyer via email
         await sendEmail({
             email: bid.buyer.email,
             subject: 'Offer Accepted',
             type: 'offerAccepted',
             name: bid.buyer.name,
         });
+
         res.status(200).json({ message: 'Offer accepted, property sold', property });
     } catch (error) {
         res.status(500).json({ message: 'Failed to accept offer', error });
