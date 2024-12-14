@@ -43,6 +43,7 @@
     "react-toastify": "^10.0.5",
     "react-type-animation": "^3.2.0",
     "slick-carousel": "^1.8.1",
+    "socket.io-client": "^4.8.1",
     "sweetalert2": "^11.11.1",
     "sweetalert2-react-content": "^5.0.7",
     "tailwind-merge": "^2.5.2",
