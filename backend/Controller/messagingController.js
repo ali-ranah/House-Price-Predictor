@@ -19,6 +19,7 @@ exports.sendMessage = async (req, res) => {
 
         const newMessage = await Message.create({
             sender,
+            propertyId,
             receiver,
             content: message,
             conversationId,
@@ -41,6 +42,7 @@ exports.getMessages = async (req, res) => {
     try {
       // Fetch property and check if the user is allowed to view messages
       const property = await Property.findById(propertyId);
+      console.log('Property',property);
       if (!property || !property.isSold || (property.owner.toString() !== userId && property.buyer.toString() !== userId)) {
         return res.status(403).json({ message: 'Unauthorized to view messages for this property' });
       }
@@ -52,7 +54,10 @@ exports.getMessages = async (req, res) => {
   
       // Fetch messages for both conversation formats
       const messages = await Message.find({
-        $or: [{ conversationId: conversationId1 }, { conversationId: conversationId2 }]
+        $or: [
+          { conversationId: conversationId1, propertyId: propertyId },
+          { conversationId: conversationId2, propertyId: propertyId }
+        ]
       })
         .populate('sender', 'name email')
         .populate('receiver', 'name email');

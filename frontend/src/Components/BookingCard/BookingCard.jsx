@@ -111,8 +111,14 @@ const BookingCard = () => {
   return (
     <div>      
       <Typography variant='h3' className='mb-3 text-black'>Listed Property</Typography>
+      {properties.length ===0 &&(
+              <div className='flex items-center p-6 justify-center'>
+              <Typography variant='h4' className='text-center text-gray-500'>No properties found</Typography>
+              </div>
+      )}
     <div className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-      {properties.map((property) => (
+      {properties.length > 0 && (
+      properties.map((property) => (
         <Card key={property._id} className="w-full max-w-[26rem] shadow-lg shadow-black rounded-lg bg-white transform transition duration-300 hover:-translate-y-2 hover:shadow-3xl">
           <CardHeader floated={false}>
             <img
@@ -146,7 +152,8 @@ const BookingCard = () => {
             )}
           </CardFooter>
         </Card>
-      ))}
+      ))
+      )}
 
       {/* Dialog for property details */}
       {selectedProperty && (

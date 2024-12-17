@@ -54,32 +54,6 @@ exports.withdrawBid = async (req, res) => {
     }
 };
 
-// Accept an offer on a property
-// exports.acceptOffer = async (req, res) => {
-//     const { bidId } = req.body;
-//     const propertyId = req.params.id;
-//     const ownerId = req.user.userId;
-
-//     try {
-//         const property = await Property.findOne({ _id: propertyId, owner: ownerId });
-//         if (!property) {
-//             return res.status(404).json({ message: 'Property not found or unauthorized' });
-//         }
-
-//         const bid = property.bids.id(bidId);
-//         if (!bid) {
-//             return res.status(404).json({ message: 'Bid not found' });
-//         }
-
-//         bid.status = 'accepted';
-//         property.isSold = true;
-
-//         await property.save();
-//         res.status(200).json({ message: 'Offer accepted, property sold', property });
-//     } catch (error) {
-//         res.status(500).json({ message: 'Failed to accept offer', error });
-//     }
-// };
 
 exports.acceptOffer = async (req, res) => {
     const { bidId } = req.body;

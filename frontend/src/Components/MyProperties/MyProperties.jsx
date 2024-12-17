@@ -361,7 +361,7 @@ const MyProperties = () => {
       setProperties(response.data);
     } catch (error) {
       console.error("Error fetching properties:", error);
-      toast.error("Failed to fetch properties. Please try again.");
+      toast.error(error.response.data.message);
     } finally {
       setIsLoading(false);
     }
@@ -416,7 +416,7 @@ const MyProperties = () => {
       fetchProperties();
     } catch (error) {
       console.error("Error accepting bid:", error);
-      toast.error("Failed to accept bid. Please try again.");
+      toast.error(error.response.data.message);
     }
   };
 
@@ -432,7 +432,7 @@ const MyProperties = () => {
       fetchProperties();
     } catch (error) {
       console.error("Error rejecting bid:", error);
-      toast.error("Failed to reject bid. Please try again.");
+      toast.error(error.response.data.message);
     }
   };
 
@@ -477,6 +477,7 @@ const MyProperties = () => {
                   {property.price} PKR
                 </Typography>
                 <div className="flex items-center space-x-2">
+                  {property.bids.find(bid => bid.status === 'accepted')&&(
                   <div className="relative">
                     <img
                       src={chatIcon}
@@ -498,6 +499,7 @@ const MyProperties = () => {
                       </div>
                     )}
                   </div>
+                  )}
                   <Button size="sm" onClick={() => handleOpenDialog(property)}>
                     View Bids
                   </Button>
@@ -559,7 +561,8 @@ const MyProperties = () => {
                   <Typography variant="small" className="text-gray-800">
                     Bidder: {bid.buyer.name} ({bid.buyer.email})
                   </Typography>
-                  <Typography variant="small" className="text-gray-800">Amount: {bid.amount} PKR</Typography>
+                  <Typography variant="small" className="text-gray-800">Amount: {bid.offerPrice} PKR</Typography>
+                  <Typography variant="small" className="text-gray-800">Status: {bid.status}</Typography>
                   <Typography variant="small" className="text-gray-800">Date: {new Date(bid.placedAt).toLocaleDateString()}</Typography>
                   {bid.status === "pending" && (
                   <div className="mt-2 flex justify-around">
@@ -589,6 +592,25 @@ const MyProperties = () => {
           </DialogBody>
         </Dialog>
       )}
+     {/* Login required dialog */}
+       <Dialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} className="max-w-sm">
+          <div className='flex items-center justify-center text-center mt-4 mb-4'>
+          <Typography variant="h5" className='text-black'>Login Required</Typography>
+          </div>
+        <DialogBody divider>
+          <Typography color="gray" className="text-center">
+            You need to log in to view your bids.
+          </Typography>
+          <div className="flex justify-around mt-4">
+            <Button className='bg-black !shadow-none' onClick={handleNavigateLogin}>
+              Go to Login
+            </Button>
+            <Button className='bg-black !shadow-none' onClick={handleNavigateHome}>
+              Go to Home
+            </Button>
+          </div>
+        </DialogBody>
+      </Dialog>
     </div>
   );
 };

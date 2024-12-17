@@ -45,7 +45,7 @@ const navigate = useNavigate();
         setProperties(response.data);
       } catch (error) {
         console.error('Error fetching properties:', error);
-        toast.error('Failed to fetch bids. Please try again later.');
+        toast.error(error.response.data.message);
       } finally {
         setLoading(false); // Set loading to false after fetching
       }
@@ -177,7 +177,7 @@ const navigate = useNavigate();
         </Dialog>
       )}
        {/* Login required dialog */}
-       <Dialog open={loginDialogOpen} handler={() => setLoginDialogOpen(false)} className="max-w-sm">
+       <Dialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} className="max-w-sm">
           <div className='flex items-center justify-center text-center mt-4 mb-4'>
           <Typography variant="h5" className='text-black'>Login Required</Typography>
           </div>

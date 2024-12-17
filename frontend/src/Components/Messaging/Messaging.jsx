@@ -140,7 +140,9 @@ const Messaging = () => {
                 ))}
               </div>
             ) : (
-              <Typography>No messages yet.</Typography>
+              <div className="flex flex-col min-h-screen bg-[#f8f9fa]">
+                <Typography variant="paragraph" className="text-center py-4 text-gray-800 font-semibold">No messages yet.</Typography>
+              </div>
             )}
           </div>
         )}
