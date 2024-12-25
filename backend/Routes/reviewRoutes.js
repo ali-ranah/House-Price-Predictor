@@ -10,6 +10,8 @@ router.post('/property/:id/review', authMiddleware, reviewController.addReview);
 // Get all reviews for a property
 router.get('/property/:id/reviews', reviewController.getReviewsForProperty);
 
+router.get('/property/own_reviews',authMiddleware, reviewController.getUserReviews);
+
 // Delete a review (only the user who posted it can delete)
 router.delete('/review/:id', authMiddleware, reviewController.deleteReview);
 

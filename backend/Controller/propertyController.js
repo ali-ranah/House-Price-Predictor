@@ -1,4 +1,5 @@
 const Property = require('../Model/propertyModel');
+const Review = require('../Model/reviewModel')
 
 // Get all properties 
 exports.getAllProperties = async (req, res) => {
@@ -88,6 +89,7 @@ exports.deleteProperty = async (req, res) => {
         if (!property) {
             return res.status(404).json({ message: 'Property not found' });
         }
+        await Review.deleteMany({ propertyId: req.params.id });
         res.status(200).json({ message: 'Property deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting property', error });

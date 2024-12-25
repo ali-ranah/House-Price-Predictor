@@ -1,206 +1,3 @@
-// import React, { useEffect, useState } from 'react';
-// import {
-//   Card,
-//   CardHeader,
-//   CardBody,
-//   CardFooter,
-//   Typography,
-//   Button,
-//   Dialog,
-//   DialogHeader,
-//   DialogBody,
-//   Spinner,
-// } from "@material-tailwind/react";
-// import { FaTimes } from 'react-icons/fa';
-// import AxiosRequest from '../AxiosRequest/AxiosRequest';
-// import { useSelector } from 'react-redux';
-// import { selectToken } from '../State/Reducers/tokenSlice';
-// import toast from 'react-hot-toast';
-// import { useNavigate } from 'react-router-dom';
-
-// const MyBids = () => {
-//   const [properties, setProperties] = useState([]);
-//   const [open, setOpen] = useState(false);
-//   const [loginDialogOpen, setLoginDialogOpen] = useState(false); // New state for login dialog
-//   const [selectedProperty, setSelectedProperty] = useState(null);
-//   const [loading, setLoading] = useState(true); // Add loading state
-//   const token = useSelector(selectToken) || localStorage.getItem('token');
-// const navigate = useNavigate();
-
-//   useEffect(() => {
-//     if (!token) {
-//       setLoginDialogOpen(true); // Open login dialog if token is missing
-//       return;
-//     }
-//   },[token])
-
-//   useEffect(() => {
-//     const fetchProperties = async () => {
-//       try {
-//         const response = await AxiosRequest.get('/api/bns/user/bids', {
-//           headers: {
-//             Authorization: `Bearer ${token}`,
-//           },
-//         });
-//         setProperties(response.data);
-//       } catch (error) {
-//         console.error('Error fetching properties:', error);
-//         toast.error(error.response.data.message);
-//       } finally {
-//         setLoading(false); // Set loading to false after fetching
-//       }
-//     };
-//     fetchProperties();
-//   }, [token]);
-
-//   const handleOpenDialog = (property) => {
-//     setSelectedProperty(property);
-//     setOpen(true);
-//   };
-
-//   const handleCloseDialog = () => {
-//     setOpen(false);
-//     setSelectedProperty(null);
-//   };
-
-//   const handleNavigateLogin = () => {
-//     navigate('/login');
-//   };
-
-//   const handleNavigateHome = () => {
-//     navigate('/home');
-//   };
-
-//   return (
-//     <div className='flex flex-col min-h-screen bg-[#FEF9F2]'>      
-//       <Typography variant='h3' className='mb-3 mt-3 text-center'>My Bids</Typography>
-
-//       {/* Show loading spinner or message */}
-//       {loading ? (
-//               <div className="flex items-center justify-center min-h-screen bg-[#FEF9F2] font-poppins">
-//               <Spinner color='white' className="h-12 w-12 text-black" />
-//             </div>
-//       ) : properties.length > 0 ? (
-//         <div className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-//           {properties.map((property) => (
-//             <Card key={property._id} className="w-full max-w-[26rem] shadow-lg shadow-black rounded-lg bg-white transform transition duration-300 hover:-translate-y-2 hover:shadow-3xl">
-//               <CardHeader floated={false}>
-//                 <img
-//                   src={property.imageUrl || 'default-image.jpg'}
-//                   alt={property.title}
-//                   className="w-full h-48 object-cover"
-//                 />
-//                 <div className="to-bg-black-10 absolute inset-0 h-full w-full bg-gradient-to-tr from-transparent via-transparent to-black/60" />
-//               </CardHeader>
-//               <CardBody>
-//                 <div className="mb-3 flex items-center justify-between">
-//                   <Typography variant="h5" color="blue-gray" className="font-medium">
-//                     {property.title}
-//                   </Typography>
-//                   <Typography color="blue-gray" className="flex items-center gap-1.5 font-normal">
-//                     {property.price} PKR
-//                   </Typography>
-//                 </div>
-//                 <Typography color="gray">{property.description}</Typography>
-//                 <Typography color="gray" className="mt-2">Location: {property.location}</Typography>
-//               </CardBody>
-//               <CardFooter className="pt-0 flex justify-center">
-//                 <Button size="sm" color="blue" onClick={() => handleOpenDialog(property)}>
-//                   View Bids
-//                 </Button>
-//                    {property.bids.some(bid => bid.status === 'accepted') && (
-//                                   <Button
-//                                     size="sm"
-//                                     color="green"
-//                                     onClick={() =>
-//                                       navigate('/chat', {
-//                                         state: {
-//                                           buyer: property.bids.find(bid => bid.status === 'accepted').buyer,
-//                                           seller: property.owner,
-//                                           propertyId: property._id,
-//                                         },
-//                                       })
-//                                     }
-//                                   >
-//                                     Chat
-//                                   </Button>
-//                                 )}
-//               </CardFooter>
-//             </Card>
-//           ))}
-//         </div>
-//       ) : (
-//         <Typography variant="h6" color="gray" className="text-center mt-10">
-//           No bids found.
-//         </Typography>
-//       )}
-
-//       {/* Dialog for viewing bids */}
-//       {selectedProperty && (
-//         <Dialog open={open} handler={handleCloseDialog} className="max-w-lg">
-//           <DialogHeader className="relative">
-//             <Typography variant='h4' className='text-center w-full'>{selectedProperty.title}</Typography>
-//             <div className='absolute top-4 right-4'>
-//               <FaTimes
-//                 size={20}
-//                 color="red"
-//                 className="cursor-pointer"
-//                 onClick={handleCloseDialog}
-//               />
-//             </div>
-//           </DialogHeader>
-//           <DialogBody divider className="overflow-y-auto max-h-96 dashboard-1-scrollbar">
-//             <img
-//               src={selectedProperty.imageUrl || 'default-image.jpg'}
-//               alt={selectedProperty.title}
-//               className="w-full h-48 object-cover mb-4"
-//             />
-//             <Typography variant="small" color="blue-gray" className="font-medium">
-//               Price: {selectedProperty.price} PKR
-//             </Typography>
-//             <Typography color="gray" className="mt-2">
-//               Bids:
-//             </Typography>
-//             {selectedProperty.bids.length > 0 ? (
-//               selectedProperty.bids.map(bid => (
-//                 <div key={bid._id} className="mt-2">
-//                   <Typography color="gray">Bidder: {bid.buyer.name} ({bid.buyer.email})</Typography>
-//                   <Typography color="gray">Offer Price: {bid.offerPrice} PKR</Typography>
-//                   <Typography color="gray">Status: {bid.status}</Typography>
-//                   <Typography color="gray">Placed At: {new Date(bid.placedAt).toLocaleString()}</Typography>
-//                 </div>
-//               ))
-//             ) : (
-//               <Typography color="gray" className="mt-2">No bids placed yet.</Typography>
-//             )}
-//           </DialogBody>
-//         </Dialog>
-//       )}
-//        {/* Login required dialog */}
-//        <Dialog open={loginDialogOpen} onClose={() => setLoginDialogOpen(false)} className="max-w-sm">
-//           <div className='flex items-center justify-center text-center mt-4 mb-4'>
-//           <Typography variant="h5" className='text-black'>Login Required</Typography>
-//           </div>
-//         <DialogBody divider>
-//           <Typography color="gray" className="text-center">
-//             You need to log in to view your bids.
-//           </Typography>
-//           <div className="flex justify-around mt-4">
-//             <Button className='bg-black !shadow-none' onClick={handleNavigateLogin}>
-//               Go to Login
-//             </Button>
-//             <Button className='bg-black !shadow-none' onClick={handleNavigateHome}>
-//               Go to Home
-//             </Button>
-//           </div>
-//         </DialogBody>
-//       </Dialog>
-//     </div>
-//   );
-// };
-
-// export default MyBids;
-
 import React, { useEffect, useState } from 'react';
 import {
   Card,
@@ -212,6 +9,7 @@ import {
   Dialog,
   DialogHeader,
   DialogBody,
+  DialogFooter,
   Spinner,
 } from "@material-tailwind/react";
 import { FaTimes } from 'react-icons/fa';
@@ -221,8 +19,10 @@ import { selectToken } from '../State/Reducers/tokenSlice';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import chatIcon from "../../assets/chat.png";
-import socket from '../Socket/Socket'; // Import socket logic
+import socket from '../Socket/Socket';
 import { selectEmail } from '../State/Reducers/emailSlice';
+import StarIcon from '@mui/icons-material/Star';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 const MyBids = () => {
@@ -234,6 +34,11 @@ const MyBids = () => {
   const token = useSelector(selectToken) || localStorage.getItem('token');
   const userEmail = useSelector(selectEmail) || localStorage.getItem("email");
   const [unseenMessages, setUnseenMessages] = useState({});
+  const [ratingDialogOpen, setRatingDialogOpen] = useState(false);
+  const [reviews, setReviews] = useState([]);
+  const [existingReview, setExistingReview] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
 const navigate = useNavigate();
 
   useEffect(() => {
@@ -242,6 +47,26 @@ const navigate = useNavigate();
       return;
     }
   },[token])
+
+  const fetchUserReviews = async () => {
+    try {
+        const response = await AxiosRequest.get('/api/review/property/own_reviews', {
+            headers: { Authorization: `Bearer ${token}` 
+          },
+        });
+        setReviews(response.data);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        // toast.error(error.response?.data?.message || 'Failed to fetch reviews');
+    }
+};
+
+  useEffect(() => {
+    if (token) {
+        fetchUserReviews();
+    }
+}, [token]);
+
 
    // WebSocket Setup
    useEffect(() => {
@@ -279,7 +104,7 @@ const navigate = useNavigate();
         setProperties(response.data);
       } catch (error) {
         console.error('Error fetching properties:', error);
-        toast.error(error.response.data.message);
+        // toast.error(error.response.data.message);
       } finally {
         setLoading(false); // Set loading to false after fetching
       }
@@ -304,6 +129,83 @@ const navigate = useNavigate();
   const handleNavigateHome = () => {
     navigate('/home');
   };
+
+  const handleCloseRatingDialog = () => {
+    setRatingDialogOpen(false);
+    setSelectedProperty(null);
+    setRating(0);
+    setComment("");
+  };
+
+  const handleOpenRatingDialog = (property) => {
+    setSelectedProperty(property);
+    const existingReview = reviews.find(review => review.propertyId._id === property._id);
+    setExistingReview(existingReview ? true : false);
+  
+    if (existingReview) {
+      // If a review exists, set the rating and comment, and disable editing
+      setRating(existingReview.rating);
+      setComment(existingReview.comment);
+    } else {
+      // If no review exists, allow editing
+      setRating(0);
+      setComment("");
+    }
+    setRatingDialogOpen(true);
+  };
+  
+  const handleSubmitRating = async () => {
+    if (!rating || !comment) {
+      handleCloseRatingDialog();
+      toast.error("Please provide a rating and comment.");
+      return;
+    }
+  
+    // Check if a review already exists before submitting
+    const existingReview = reviews.find(review => review.propertyId._id === selectedProperty._id);
+    if (existingReview) {
+      handleCloseRatingDialog();
+      toast.error("You have already submitted a review for this property.");
+      return; // Do not submit if review already exists
+    }
+  
+    try {
+      const response = await AxiosRequest.post(
+        `/api/review/property/${selectedProperty._id}/review`,
+        { rating, comment },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+  
+      toast.success(response.data.message || "Review added successfully");
+      fetchUserReviews();
+      handleCloseRatingDialog();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      toast.error(error.response?.data?.message || "Error adding review");
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    try {
+      // Make the API call to delete the review
+      const response = await AxiosRequest.delete(`/api/review/review/${reviewId}`,{
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
+      if (response.status === 200) {
+        // Remove the deleted review from the local state
+        setReviews((prevReviews) => prevReviews.filter((review) => review._id !== reviewId));
+        handleCloseDialog();
+        toast.success('Review deleted successfully');
+      }
+    } catch (error) {
+      console.error("Error deleting review", error);
+      handleCloseDialog();
+      toast.error('There was an error deleting the review');
+    }
+  };
+  
+  
 
   return (
     <div className='flex flex-col min-h-screen bg-[#FEF9F2]'>      
@@ -368,6 +270,13 @@ const navigate = useNavigate();
                          )}
                      </div>
                      )}
+{property.bids.find((bid) => bid.status === "accepted") && (
+  <StarIcon
+    className="h-6 w-6 text-gray-500 hover:text-blue-500 cursor-pointer transition-transform duration-300 hover:scale-110"
+    onClick={() => handleOpenRatingDialog(property)}
+  />
+)}
+
                      <Button size="sm" onClick={() => handleOpenDialog(property)}>
                        View Bids
                      </Button>
@@ -378,9 +287,60 @@ const navigate = useNavigate();
            </div>
          ) : (
            <Typography variant="h6" className="text-center text-gray-600 mt-10">
-             No properties found.
+             No Bids found.
            </Typography>
          )}
+           <Dialog open={ratingDialogOpen} handler={handleCloseRatingDialog}>
+        <DialogHeader className='relative'>
+        <div className="flex items-center justify-center w-full">
+        <Typography variant="h5" className="font-bold text-center">
+        Rate {selectedProperty?.title}
+        </Typography>
+          </div>
+          <FaTimes
+                 size={20}
+                 color="red"
+                 className="cursor-pointer absolute top-4 right-4"
+                 onClick={handleCloseRatingDialog}
+               />
+        </DialogHeader>
+        <DialogBody>
+          <div className="flex flex-col space-y-4">
+              <div className="flex justify-center space-x-2">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <svg
+          key={star}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill={star <= rating ? "gold" : "gray"}
+          className={`h-8 w-8 cursor-pointer transition-transform duration-200 hover:scale-110 ${existingReview ? 'pointer-events-none' : ''}`}
+          onClick={() => existingReview ? null : setRating(star)} // Prevent clicks if review exists
+        >
+          <path d="M12 .587l3.668 7.572 8.332 1.151-6.064 5.737 1.568 8.319L12 18.897 4.496 23.366l1.568-8.319L0 9.31l8.332-1.151z" />
+        </svg>
+      ))}
+    </div>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Write your comment"
+              className="border border-gray-300 rounded p-2 resize-none"
+              rows="4"
+              readOnly={existingReview}
+              disabled={existingReview}
+            ></textarea>
+          </div>
+        </DialogBody>
+        <DialogFooter className="flex justify-between items-center">
+  <Button color="red" onClick={handleCloseRatingDialog}>
+    Cancel
+  </Button>
+  <Button color="green" onClick={handleSubmitRating}>
+    Submit
+  </Button>
+</DialogFooter>
+
+      </Dialog>
    
          {selectedProperty && (
            <Dialog open={open} handler={handleCloseDialog} className="max-w-lg">
@@ -419,6 +379,37 @@ const navigate = useNavigate();
                  <Typography variant="body2" className="text-gray-800">
                    {selectedProperty.description}
                  </Typography>
+              {/* Reviews Section */}
+              {reviews && reviews.length > 0 && (
+                  <div className="mt-4 flex flex-col items-center justify-center">
+            {reviews
+              .filter((review) => review.propertyId._id === selectedProperty._id)
+              .map((review) => (
+                <div key={review._id} className="mt-2 p-2 bg-gray-100 rounded-lg flex items-center justify-between gap-4">
+                                <div>
+                  <Typography className="font-bold text-gray-600">My Review:</Typography>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, index) => (
+                      <StarIcon
+                        key={index}
+                        style={{ color: index < review.rating ? "gold" : "gray" }}
+                        fontSize="small"
+                      />
+                    ))}
+                  </div>
+                  <Typography color="gray" className="text-sm">
+                    {review.comment}
+                  </Typography>
+                </div>
+                <DeleteIcon
+                onClick={() => handleDeleteReview(review._id)}
+                className="cursor-pointer text-red-500 hover:text-red-700"
+                fontSize="small"
+              />
+            </div>
+              ))}
+          </div>
+        )}
                </div>
                <Typography variant="lead" className="text-gray-800 font-bold text-center">
                  Bids:

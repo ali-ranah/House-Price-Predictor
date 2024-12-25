@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardContent } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import {Input} from '@/Components/ui/input'; 
@@ -7,6 +7,7 @@ import AxiosRequest from '../../AxiosRequest/AxiosRequest'
 import toast from 'react-hot-toast';
 
 const PredictPrice = () => {
+  const [locations, setLocations] = useState([]);
   const [location, setLocation] = useState('');
   const [size, setSize] = useState('');
   const [bedrooms, setBedrooms] = useState('');
@@ -14,23 +15,63 @@ const PredictPrice = () => {
   const [loading, setLoading] = useState(false);
   const [predictedPrice, setPredictedPrice] = useState(null);
 
+
+  useEffect(() => {
+    // Fetch the locations from the backend API when the component mounts
+    const fetchLocations = async () => {
+      try {
+        const response = await AxiosRequest.get('/api/predict/get-locations');
+        setLocations(response.data.locations);
+      } catch (error) {
+        toast.error('Error fetching locations');
+      }
+    };
+
+    fetchLocations();
+  }, []);
+
+
   const handlePredict = async () => {
-    if(!location){
-    toast.error('Please provide your required house location');
-    return;
+    // Validate the location
+    if (!location) {
+      toast.error('Please provide your required house location');
+      return;
     }
-    if(!size){
-    toast.error('Please provide your required house size');
-    return;
+    // Validate size, bedrooms, and bathrooms
+    if (!size) {
+      toast.error('Please provide your required house size');
+      return;
     }
-    if(!bedrooms){
-     toast.error('Please provide your required bedrooms in house');
-     return;
+    if (!bedrooms) {
+      toast.error('Please provide your required bedrooms in house');
+      return;
     }
-    if(!bathrooms){
-    toast.error('Please provide your required bathrooms in house');
-    return;
+    if (!bathrooms) {
+      toast.error('Please provide your required bathrooms in house');
+      return;
     }
+  
+    // maximum values in the model
+    const maxValues = {
+      max_bedrooms: 16,  
+      max_bathrooms: 14, 
+      max_area: 338798790, 
+    };
+  
+    // Validate that the inputs do not exceed the maximum values
+    if (Number(bedrooms) > maxValues.max_bedrooms) {
+      toast.error(`Bedrooms cannot exceed ${maxValues.max_bedrooms}`);
+      return;
+    }
+    if (Number(bathrooms) > maxValues.max_bathrooms) {
+      toast.error(`Bathrooms cannot exceed ${maxValues.max_bathrooms}`);
+      return;
+    }
+    if (Number(size) > maxValues.max_area) {
+      toast.error(`Area cannot exceed ${maxValues.max_area}`);
+      return;
+    }
+  
     setLoading(true);
     try {
       const response = await AxiosRequest.post('/api/predict/predict-price', {
@@ -39,15 +80,17 @@ const PredictPrice = () => {
         bedrooms: Number(bedrooms),
         bathrooms: Number(bathrooms),
       });
-
+  
       setPredictedPrice(response.data.prediction.estimatedPrice);
     } catch (error) {
-        toast.error(error.response.data.message);
+      toast.error(error.response.data.message);
       console.error(error);
     } finally {
       setLoading(false);
     }
   };
+  
+  
 
   const formatPrice = (price) => {
     return `PKR ${new Intl.NumberFormat('en-US', { 
@@ -72,12 +115,24 @@ const handleNumericInputChange = (setter) => (e) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <Input
+            {/* <Input
               placeholder="Location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               className="mb-4"
-            />
+            /> */}
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="mb-4 w-full p-2 border rounded-md"
+            >
+              <option value="">Select Location</option>
+              {locations.map((loc, index) => (
+                <option key={index} value={loc}>
+                  {loc}
+                </option>
+              ))}
+            </select>
             <Input
               type="number"
               placeholder="Size (sq ft)"

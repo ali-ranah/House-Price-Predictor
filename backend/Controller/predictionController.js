@@ -54,3 +54,28 @@ exports.predictPrice = async (req, res) => {
         res.status(500).json({ message: 'Error predicting price', error: error.message });
     }
 };
+
+const getLocationsFromFlask = async () => {
+    try {
+        // Request to Flask API to get the list of locations
+        const response = await axios.get('http://127.0.0.1:5000/api/locations');
+        return response.data;  // Return the locations from the Flask API
+    } catch (error) {
+        console.error('Error fetching locations from Flask API:', error);
+        throw new Error('Error fetching locations from Flask API');
+    }
+};
+
+// Controller to handle fetching locations
+exports.getLocations = async (req, res) => {
+    try {
+        // Fetch the locations from the Flask API
+        const locations = await getLocationsFromFlask();
+
+        // If locations are fetched successfully, return them to the frontend
+        res.status(200).json({ locations });
+    } catch (error) {
+        // If an error occurs, return an error message
+        res.status(500).json({ message: 'Error fetching locations', error: error.message });
+    }
+};
