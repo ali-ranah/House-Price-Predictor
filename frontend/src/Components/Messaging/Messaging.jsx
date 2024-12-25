@@ -26,8 +26,12 @@ const Messaging = () => {
   const userEmail = useSelector(selectEmail) || localStorage.getItem('email');
 
   useEffect(() => {
-    if (!propertyId) return;
+    if (!propertyId || !userEmail) return;
 
+    // Emit the USER_CONNECTED event when the user connects
+    socket.emit('USER_CONNECTED', { userEmail });
+
+    // Fetch messages for the property
     const fetchMessages = async () => {
       try {
         const response = await AxiosRequest.get(`/api/messages/${propertyId}`, {
@@ -44,23 +48,36 @@ const Messaging = () => {
 
     fetchMessages();
 
-    // Socket setup for real-time updates
-    socket.emit('USER_CONNECTED', { userEmail });
-
+    // Listen for incoming messages
     socket.on('RECEIVE_MESSAGE', (message) => {
-      console.log('Received message',message);
+      console.log('Received message', message);
       setMessages((prevMessages) => [...prevMessages, message]);
+       // Mark the message as seen when it is received (if not already seen)
+    if (message.receiverSeen === false) {
+      socket.emit('MARK_AS_SEEN', { messageId: message._id, sender: message.sender,receiver: message.receiver});
+    }
     });
 
-    socket.on('UNSEEN_MESSAGE_COUNT', ({ unseenCount }) => {
-      console.log('Unseen message count',unseenCount);
-      setUnseenCount(unseenCount);
-    });
+   // Listen for the MESSAGE_SEEN event to update the message state
+   socket.on('MESSAGE_SEEN', ({ messageId, senderEmail }) => {
+    setMessages((prevMessages) =>
+      prevMessages.map((msg) =>
+        msg._id === messageId || msg.senderEmail === senderEmail
+          ? { ...msg, receiverSeen: true }
+          : msg
+      )
+    );
+  });
 
+
+    // Cleanup the socket connection and listeners on unmount
     return () => {
-      socket.disconnect(); // Cleanup socket connection
+      socket.off('RECEIVE_MESSAGE');
+      socket.off('MESSAGE_SEEN');
+
     };
-  }, [propertyId, token, userEmail, socket]);
+  }, [propertyId, token, userEmail]);
+
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) {
@@ -69,22 +86,34 @@ const Messaging = () => {
     }
 
     try {
-      const response = await AxiosRequest.post(
-        `/api/messages/send`,
-        { propertyId, message: newMessage },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setMessages((prevMessages) => [...prevMessages, response.data.newMessage]);
-      socket.emit('SEND_MESSAGE', {
-        senderId: response.data.newMessage.sender._id,
-        receiverId: response.data.newMessage.receiver._id,
-        content: response.data.newMessage.content,
-        propertyId,
-      });
-      setNewMessage('');
+      // Emit USER_CONNECTED event to check connection and fetch unseen message count
+      socket.emit("USER_CONNECTED", { userEmail });
+      console.log('Heeeeee');  
+
+      // Now proceed with sending the message after checking the unseen count
+      try {
+        // Send the new message to the server
+        const response = await AxiosRequest.post(
+          `/api/messages/send`,
+          { propertyId, message: newMessage },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        // Emit the new message to the receiver using socket
+        socket.emit('SEND_MESSAGE', {
+          receiverId: response.data.newMessage.receiver._id,
+          message: response.data.newMessage,
+        });
+
+        // Update local state with the new message
+        setMessages((prevMessages) => [...prevMessages, response.data.newMessage]);
+        setNewMessage('');
+      } catch (error) {
+        toast.error('Failed to send message.');
+        console.error('Error sending message:', error);
+      }
     } catch (error) {
-      toast.error('Failed to send message.');
-      console.error('Error sending message:', error);
+      console.error('Error in socket communication:', error);
     }
   };
 

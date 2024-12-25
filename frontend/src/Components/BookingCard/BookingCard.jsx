@@ -129,6 +129,11 @@ const BookingCard = () => {
             <div className="to-bg-black-10 absolute inset-0 h-full w-full bg-gradient-to-tr from-transparent via-transparent to-black/60" />
           </CardHeader>
           <CardBody>
+            <div>
+            <Typography variant='small' color="gray" >
+            {new Date(property.dateListed).toLocaleDateString()}
+            </Typography>
+            </div>
             <div className="mb-3 flex items-center justify-between">
               <Typography variant="h5" color="blue-gray" className="font-medium">
                 {property.title}

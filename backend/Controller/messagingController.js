@@ -42,7 +42,6 @@ exports.getMessages = async (req, res) => {
     try {
       // Fetch property and check if the user is allowed to view messages
       const property = await Property.findById(propertyId);
-      console.log('Property',property);
       if (!property || !property.isSold || (property.owner.toString() !== userId && property.buyer.toString() !== userId)) {
         return res.status(403).json({ message: 'Unauthorized to view messages for this property' });
       }

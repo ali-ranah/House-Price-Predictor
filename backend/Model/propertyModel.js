@@ -68,6 +68,10 @@ const propertySchema = new mongoose.Schema({
     additionalDetails: {
         type: String,
     },
+    dateListed: {
+        type: Date,
+        default: Date.now,
+    },    
     bids: [
         {
             buyer: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
