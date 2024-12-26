@@ -10,6 +10,7 @@ const exchangeRoutes = require('./Routes/exchangeRateRoutes');
 const propertyRoutes = require('./Routes/propertyRoutes');
 const predictRoutes = require('./Routes/predictRoutes');
 const messagingRoutes = require('./Routes/messagingRoutes');
+const searchRoutes = require('./Routes/searchRoutes');
 
 require("dotenv").config();
 
@@ -60,6 +61,7 @@ app.use('/api/exchange', exchangeRoutes);
 app.use('/api/property', propertyRoutes);
 app.use('/api/predict', predictRoutes);
 app.use('/api/messages', messagingRoutes);
+app.use('/api/search', searchRoutes);
 
 
 app.use((err, req, res, next) => {

@@ -74,14 +74,14 @@ const Login = () => {
            },1000); 
         }
         } catch (error) {
-            if (error.response && error.response.status === 404) {
-                toast.error('User not found');
-            } else if (error.response && error.response.status === 401) {
-                toast.error('Invalid password');
-            } else {
-                console.error('Login failed:', error.response.data);
-                toast.error('Login failed');
-            }
+            // if (error.response && error.response.status === 404) {
+            //     toast.error('User not found');
+            // } else if (error.response && error.response.status === 401) {
+                toast.error(error.response.data.message);
+            // } else {
+            //     console.error('Login failed:', error.response.data);
+            //     toast.error('Login failed');
+            // }
         }
     };
 
@@ -138,7 +138,7 @@ const Login = () => {
                             </div>
                             <Button type="submit" className="bg-black text-white py-4 shadow-none rounded-lg hover:shadow-gray-500 hover:shadow-md">Login</Button>
                         </form>
-                        <div className="flex items-center justify-center my-6">
+                        {/* <div className="flex items-center justify-center my-6">
                             <span className="text-sm text-gray-700">OR</span>
                         </div>
                         <div className="flex flex-col items-center">
@@ -158,7 +158,7 @@ const Login = () => {
                     )}
                 />
         </GoogleOAuthProvider>
-                        </div>
+                        </div> */}
                         <p className="text-center text-gray-500 mt-6">Don't have an account? <span className="text-blue-700 cursor-pointer" onClick={() => navigate('/signup')}>Sign up</span></p>
                     </div>
                 </section>

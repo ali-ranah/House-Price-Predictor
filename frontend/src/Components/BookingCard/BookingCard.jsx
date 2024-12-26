@@ -27,6 +27,7 @@ const BookingCard = () => {
   const [offerPrice, setOfferPrice] = useState(''); // State for the offer price
   const token = useSelector(selectToken) || localStorage.getItem('token');
   const userId = localStorage.getItem('userId');
+  const [loading,setLoading] = useState(false);
 
 
     const fetchProperties = async () => {
@@ -63,14 +64,26 @@ const BookingCard = () => {
     setOfferPrice(''); 
   };
 
+  const handleChange = (e) => {
+    const { value } = e.target;
+  
+    // Check if the value is empty or a valid number (integer or decimal)
+    if (value === '' || (Number(value) > 0 && /^\d+(\.\d+)?$/.test(value))) {
+      setOfferPrice(value);
+    }
+  };
+  
+
 
   const handleBidSubmit = async () => {
     if (!offerPrice || isNaN(offerPrice) || offerPrice <= 0) {
+      handleCloseBidDialog();
       toast.error("Please enter a valid bid amount.");
       return;
     }
   
     try {
+      setLoading(true);
       await AxiosRequest.post(`/api/bns/property/${selectedPropertyForBid._id}/bid`, {
         offerPrice: Number(offerPrice),
       }, {
@@ -81,7 +94,6 @@ const BookingCard = () => {
       
       toast.success("Bid placed successfully!");
       handleCloseBidDialog();
-      handleCloseDialog(); 
       fetchProperties();
     } catch (error) {
       // Improved error logging
@@ -104,6 +116,8 @@ const BookingCard = () => {
         });
         toast.error("Failed to place bid. Please try again.");
       }
+    }finally{
+      setLoading(false);
     }
   };
   
@@ -147,12 +161,12 @@ const BookingCard = () => {
             </Typography>
           </CardBody>
           <CardFooter className="pt-0 flex justify-between">
-            <Button size="sm" color="blue" onClick={() => handleOpenDialog(property)}>
+            <Button size="sm" color="blue" className="text-white shadow-none rounded-lg hover:shadow-gray-500 hover:shadow-md" onClick={() => handleOpenDialog(property)}>
               Read More
             </Button>
             {(token && property.owner._id !== userId && !property.bids.some(bid => bid.buyer._id === userId)) && (
-            <Button size="sm" className='bg-black shadow-none hover:shadow-black' onClick={()=> handleOpenBidDialog(property)}>
-              Bid
+            <Button size="sm" className="bg-black text-white shadow-none rounded-lg hover:shadow-gray-500 hover:shadow-md" onClick={()=> handleOpenBidDialog(property)}>
+             Place Bid
             </Button>
             )}
           </CardFooter>
@@ -238,7 +252,8 @@ const BookingCard = () => {
             label="Offer Price"
             type="number"
             value={offerPrice}
-            onChange={(e) => setOfferPrice(e.target.value)}
+            // onChange={(e) => setOfferPrice(e.target.value)}
+            onChange={handleChange}
             className="w-full focus:ring-0"
           />
         </DialogBody>
@@ -246,8 +261,8 @@ const BookingCard = () => {
           <Button size="sm" color="red" onClick={handleCloseBidDialog}>
             Cancel
           </Button>
-          <Button size="sm" className='bg-black shadow-none hover:shadow-black' onClick={handleBidSubmit}>
-            Submit Bid
+          <Button size="sm" className='bg-black shadow-none hover:shadow-black'  disabled={loading} onClick={handleBidSubmit}>
+            {loading ? "Submitting Bid..." : "Submit Bid"}
           </Button>
         </DialogFooter>
       </Dialog>

@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardHeader, CardContent } from '@/Components/ui/card';
 import { Button } from '@/Components/ui/button';
 import {Input} from '@/Components/ui/input'; 
-import { Spinner } from '@material-tailwind/react'; // Adjust path as needed
+import { Spinner, Typography } from '@material-tailwind/react'; // Adjust path as needed
 import AxiosRequest from '../../AxiosRequest/AxiosRequest'
 import toast from 'react-hot-toast';
+import { motion } from "framer-motion";
 
 const PredictPrice = () => {
   const [locations, setLocations] = useState([]);
@@ -108,10 +109,19 @@ const handleNumericInputChange = (setter) => (e) => {
 };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#FEF9F2]">
+   <div className="flex flex-col min-h-screen bg-[#f8f9fa]">
+    <div className="flex items-start justify-center min-h-screen">
+    <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-lg w-full p-6"
+      >
       <Card className="p-8 w-full max-w-md shadow-lg shadow-black rounded-lg bg-white transform transition duration-300 hover:-translate-y-2 hover:shadow-3xl">
         <CardHeader>
-          <h1 className="text-2xl font-semibold text-center">House Price Prediction</h1>
+      <Typography variant="h4" className="text-center py-4 text-gray-800 font-semibold">
+            House Price Prediction
+        </Typography>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -175,6 +185,8 @@ const handleNumericInputChange = (setter) => (e) => {
           )}
         </CardContent>
       </Card>
+      </motion.div>
+    </div>
     </div>
   );
 };

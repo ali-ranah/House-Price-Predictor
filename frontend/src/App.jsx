@@ -14,6 +14,9 @@ import { Toaster } from 'react-hot-toast';
 import MyBids from './Components/MyBids/MyBids';
 import MyProperties from './Components/MyProperties/MyProperties';
 import Messaging from './Components/Messaging/Messaging';
+import EmailVerification from './Components/Auth/EmailVerification/EmailVerification';
+import SearchResults from './Components/Search/SearchResults';
+import EditProfile from './Components/Profile/EditProfile/EditProfile';
 
 const App = () => {
     return (
@@ -22,6 +25,7 @@ const App = () => {
             <Routes>
                 <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/verify-email" element={<EmailVerification />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/home" element={
                     <Layout>
@@ -56,6 +60,16 @@ const App = () => {
                 <Route path="/profile" element={
                     <Layout>
                 <Profile />
+                </Layout>
+                } />
+               <Route path="/search" element={
+                    <Layout>
+                <SearchResults />
+                </Layout>
+                } />
+                <Route path="/edit-profile" element={
+                    <Layout>
+                <EditProfile />
                 </Layout>
                 } />
                 <Route path="/forgot-password" element={<ForgotPassword />} />

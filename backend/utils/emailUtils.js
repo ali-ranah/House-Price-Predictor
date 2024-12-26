@@ -19,7 +19,7 @@
 
 const nodemailer = require('nodemailer');
 
-async function sendEmail({ email, subject, verificationCode = '', type, name = '',offerPrice }) {
+async function sendEmail({ email, subject, verificationCode = '', type, name = '',offerPrice,verificationLink=''}) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     host: 'smtp.gmail.com',
@@ -111,6 +111,28 @@ async function sendEmail({ email, subject, verificationCode = '', type, name = '
         ${emailFooter}
       </div>
     `;
+} else if(type === 'account_verification'){
+  htmlContent =`
+  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  <h2 style="color:#2C3E50; text-align: center;">Verify Your Email Address</h2>
+  <p style="color: #555;">Dear ${name ? name : 'User'},</p>
+  <p style="color: #555;">Thank you for signing up with <strong>House Price Predictor</strong>. To complete your registration, please verify your email address by clicking the link below:</p>
+  <div style="text-align: center; margin: 20px 0;">
+    <a href="${verificationLink}" style="background-color: #2C3E50; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 16px; display: inline-block;">Verify Email</a>
+  </div>
+  <p style="color: #555;">If the button above does not work, copy and paste the following link into your browser:</p>
+  <p style="color: #2C3E50; word-wrap: break-word;">${verificationLink}</p>
+  <p style="color: #555;">If you did not request this email, please ignore it.</p>
+  ${emailFooter}
+</div>`
+}else if(type ==='verification_success'){
+  htmlContent = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  <h2 style="color:#2C3E50; text-align: center;">Email Verified Successfully</h2>
+  <p style="color: #555;">Dear ${name},</p>
+  <p style="color: #555;">Congratulations! Your email address has been successfully verified. You can now enjoy full access to all the features of <strong>House Price Predictor</strong>.</p>
+  <p style="color: #555;">If you have any questions or need assistance, feel free to contact our support team.</p>
+  ${emailFooter}
+</div>`
 }
 
   const mailOptions = {

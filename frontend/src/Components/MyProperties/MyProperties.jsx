@@ -31,6 +31,8 @@ const MyProperties = () => {
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [loginDialogOpen, setLoginDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const[acceptBid,setAcceptBid]=useState(false);
+  const[rejectBid,setRejectBid]=useState(false);
   const [unseenMessages, setUnseenMessages] = useState({});
   const token = useSelector(selectToken) || localStorage.getItem("token");
   const userEmail = useSelector(selectEmail) || localStorage.getItem("email");
@@ -144,6 +146,7 @@ const MyProperties = () => {
 
   const handleAcceptBid = async (propertyId, bidId) => {
     try {
+      setAcceptBid(true);
       const response = await AxiosRequest.patch(
         `/api/bns/property/${propertyId}/bid/accept`,
         { bidId },
@@ -155,11 +158,14 @@ const MyProperties = () => {
     } catch (error) {
       console.error("Error accepting bid:", error);
       toast.error(error.response.data.message);
+    }finally {
+      setAcceptBid(false);
     }
   };
 
   const handleRejectBid = async (propertyId, bidId) => {
     try {
+      setRejectBid(true);
       const response = await AxiosRequest.patch(
         `/api/bns/property/${propertyId}/bid/reject`,
         { bidId },
@@ -171,6 +177,8 @@ const MyProperties = () => {
     } catch (error) {
       console.error("Error rejecting bid:", error);
       toast.error(error.response.data.message);
+    }finally{
+      setRejectBid(false);
     }
   };
 
@@ -179,7 +187,6 @@ const MyProperties = () => {
       <Typography variant="h3" className="text-center py-4 text-gray-800 font-semibold">
         My Properties
       </Typography>
-
       {isLoading ? (
         <div className="flex justify-center items-center min-h-[70vh]">
           <Spinner className="h-16 w-16 text-blue-600" />
@@ -239,13 +246,16 @@ const MyProperties = () => {
                       }
                     />
           {unseenMessages[property._id] > 0 && (
-                        <div className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                           <div className="absolute bottom-5 left-5 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                           {unseenMessages[property._id]}
                         </div>
                       )}
                   </div>
                   )}
-                  <Button size="sm" onClick={() => handleOpenDialog(property)}>
+                  <Button 
+                  size="sm"
+                  className="bg-black text-white shadow-none rounded-lg hover:shadow-gray-500 hover:shadow-md" 
+                  onClick={() => handleOpenDialog(property)}>
                     View Bids
                   </Button>
                 </div>
@@ -255,8 +265,8 @@ const MyProperties = () => {
         </div>
       ) : (
         <Typography variant="h6" className="text-center text-gray-600 mt-10">
-          No properties found.
-        </Typography>
+        You haven't listed any properties for sale yet. Start by adding your property now.
+      </Typography>
       )}
 
       {selectedProperty && (
@@ -340,16 +350,18 @@ const MyProperties = () => {
                     <Button
                       size="sm"
                       color="green"
+                      disabled={acceptBid || rejectBid}
                       onClick={() => handleAcceptBid(selectedProperty._id, bid._id)}
                     >
-                      Accept
+                    {acceptBid ? "Accepting..." : "Accept"}
                     </Button>
                     <Button
                       size="sm"
                       color="red"
+                      disabled={rejectBid || acceptBid}
                       onClick={() => handleRejectBid(selectedProperty._id, bid._id)}
                     >
-                      Reject
+                    {rejectBid ? "Rejecting..." : "Reject"}                                    
                     </Button>
                   </div>
                   )}
@@ -370,7 +382,7 @@ const MyProperties = () => {
           </div>
         <DialogBody divider>
           <Typography color="gray" className="text-center">
-            You need to log in to view your bids.
+            You need to log in to view your properties.
           </Typography>
           <div className="flex justify-around mt-4">
             <Button className='bg-black !shadow-none' onClick={handleNavigateLogin}>

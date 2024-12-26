@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react";
+import React,{useState,useEffect, useCallback} from "react";
 import {
   Navbar,
   Typography,
@@ -18,6 +18,7 @@ import sellProperty from '../../assets/sell-property.png';
 import predictPrice from '../../assets/predict-price.png';
 import myProperty from '../../assets/my-property.png';
 import myBids from '../../assets/my-bids.png';
+import AxiosRequest from "../AxiosRequest/AxiosRequest";
 
  
 export function Header() {
@@ -29,10 +30,40 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const storedToken = localStorage.getItem('token');
   const token = useSelector(selectToken) || storedToken;
+  const [searchQuery, setSearchQuery] = useState('');
+
 
   const handleSignIn = ()=>{
 navigate('/login')
   }
+
+
+  const handleSearch = useCallback(
+    async (e) => {
+      const query = e.target.value.trim();  // Trim the query immediately
+
+      // Set the query state, only if it has changed
+      if (query !== searchQuery) {
+        setSearchQuery(query);
+
+        if (query) {
+          try {
+            const response = await AxiosRequest.get(`/api/search/search?query=${query}`);
+
+            // Navigate to search page with the query as a parameter and results
+            navigate(`/search?q=${query}`, { state: { results: response.data.results } });
+          } catch (error) {
+            console.error('Error during search:', error);
+          }
+        } else {
+          // Clear the results when the query is empty
+          navigate('/search', { state: { results: [] } });
+        }
+      }
+    },
+    [searchQuery, navigate] 
+  );
+  
  
   useEffect(() => {
     const handleResize = () => {
@@ -133,6 +164,8 @@ navigate('/login')
               type="search"
               placeholder="Search"
               color="white"
+              value={searchQuery}
+              onChange={handleSearch}
               containerProps={{
                 className: "min-w-[288px]",
               }}
@@ -244,6 +277,8 @@ navigate('/login')
                 type="search"
                 placeholder="Search"
                 color="white"
+                value={searchQuery}
+                onChange={handleSearch}
                 containerProps={{
                   className: "min-w-[288px]",
                 }}

@@ -21,6 +21,14 @@ const userSchema = new mongoose.Schema({
         newProperty: { type: Boolean, default: true },
         bidActivity: { type: Boolean, default: true },
     },
+    isVerified: { 
+        type: Boolean, 
+        default: false 
+    },
+    verificationToken: {
+        type: String, 
+        default: null 
+    },
     verificationCode: {
         type: String,
         default: null

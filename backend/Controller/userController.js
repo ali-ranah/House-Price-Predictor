@@ -1,4 +1,3 @@
-const sendVerificationEmail = require('../utils/emailUtils');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
@@ -22,7 +21,27 @@ exports.signup = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         // Create the user with the hashed password
         const user = await User.create({ name, email, password: hashedPassword });
-        res.status(201).json({ user });
+         // Generate a verification token (no expiration)
+         const verificationToken = jwt.sign(
+            { userId: user._id, email },
+            process.env.JWT_SECRET
+        );
+
+        // Save the verification token to the database
+        user.verificationToken = verificationToken;
+        await user.save();
+
+        // Send verification email
+        const verificationLink = `${process.env.CLIENT_URL}/verify-email?token=${verificationToken}`;
+        await sendEmail({
+            email: user.email,
+            subject: 'Verify Your Email',
+            type:'account_verification',
+            name: user.name,
+            verificationLink
+        });
+
+        res.status(201).json({ message: 'Sign-up successful. Please verify your email.' });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -36,6 +55,12 @@ exports.login = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+
+        // Check if the user is verified
+        if (!user.isVerified) {
+            return res.status(401).json({ message: 'Please verify your email before logging in.' });
+        }
+
         // Compare passwords
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
@@ -103,6 +128,56 @@ exports.getUserInfo = async (req, res) => {
         res.status(500).json({ message: 'Server error', error });
     }
 };
+
+exports.updateOwnInformation = async (req, res) => {
+    try {
+      const id = req.user.userId; 
+      const { name, email, newPassword, currentPassword } = req.body; // Accept current password
+      let image = req.body.image || null;
+  
+      // Fetch the user by ID
+      const currentUser = await User.findById(id);
+      if (!currentUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      // Build the update object dynamically
+      let updateFields = {};
+      if (name) updateFields.name = name;
+      if (email) updateFields.email = email;
+      
+      // If the user wants to update the password, verify the current password first
+      if (newPassword) {
+        if (!currentPassword) {
+          return res.status(400).json({ message: 'Current password is required to update your password.' });
+        }
+  
+        // Compare the provided current password with the stored password
+        const isPasswordMatch = await bcrypt.compare(currentPassword, currentUser.password);
+        if (!isPasswordMatch) {
+          return res.status(401).json({ message: 'Current password is incorrect.' });
+        }
+  
+        // Hash and update the new password
+        updateFields.password = await bcrypt.hash(newPassword, 10);
+      }
+  
+      if (image && image !== currentUser.image) {
+        updateFields.picture = image;
+      }
+  
+      // Update the user with only the provided fields
+      const updatedUser = await User.findByIdAndUpdate(
+        id,
+        { $set: updateFields },
+        { new: true } // Return the updated document
+      );  
+      res.status(200).json({ message: 'User updated successfully', user: updatedUser });
+    } catch (err) {
+      console.error('Error updating user:', err);
+      res.status(500).json({ message: 'Internal Server Error' });
+    }
+  };
 
 exports.getGoogleUserInfo = async (req, res) => {
     try {
@@ -233,5 +308,38 @@ exports.resendVerificationCode = async (req, res) => {
     } catch (error) {
         console.error('Failed to resend verification code:', error);
         res.status(500).json({ message: 'Failed to resend verification code' });
+    }
+};
+
+// Verify email
+exports.verifyEmail = async (req, res) => {
+    const { token } = req.body;
+
+    try {
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        // Find the user
+        const user = await User.findOne({ _id: decoded.userId, verificationToken: token });
+        if (!user) {
+            return res.status(404).json({ message: 'Invalid token' });
+        }
+
+        // Update the user's verification status
+        user.isVerified = true;
+        user.verificationToken = null; // Clear the token
+        await user.save();
+         // Send verification success email
+         await sendEmail({
+            email: user.email,
+            subject: 'Email Verified Successfully',
+            type: 'verification_success',
+            name: user.name,
+        });
+
+        res.status(200).json({ message: 'Email verified successfully' });
+    } catch (error) {
+        console.error('Email verification error:', error);
+        res.status(400).json({ message: 'Invalid token' });
     }
 };

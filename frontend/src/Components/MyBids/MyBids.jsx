@@ -208,8 +208,10 @@ const navigate = useNavigate();
   
 
   return (
-    <div className='flex flex-col min-h-screen bg-[#FEF9F2]'>      
-      <Typography variant='h3' className='mb-3 mt-3 text-center'>My Bids</Typography>
+    <div className="flex flex-col min-h-screen bg-[#f8f9fa]">
+      <Typography variant="h3" className="text-center py-4 text-gray-800 font-semibold">
+        My Bids
+        </Typography>
 
       {/* Show loading spinner or message */}
      {loading ? (
@@ -264,7 +266,7 @@ const navigate = useNavigate();
                          }
                        />
              {unseenMessages[property._id] > 0 && (
-                           <div className="absolute top-0 right-0 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                           <div className="absolute bottom-5 left-5 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                              {unseenMessages[property._id]}
                            </div>
                          )}
@@ -277,7 +279,10 @@ const navigate = useNavigate();
   />
 )}
 
-                     <Button size="sm" onClick={() => handleOpenDialog(property)}>
+                     <Button 
+                     size="sm"
+                     className="bg-black text-white shadow-none rounded-lg hover:shadow-gray-500 hover:shadow-md" 
+                     onClick={() => handleOpenDialog(property)}>
                        View Bids
                      </Button>
                    </div>
@@ -287,7 +292,7 @@ const navigate = useNavigate();
            </div>
          ) : (
            <Typography variant="h6" className="text-center text-gray-600 mt-10">
-             No Bids found.
+             You haven't placed any bids yet. Start by submitting your offer now.
            </Typography>
          )}
            <Dialog open={ratingDialogOpen} handler={handleCloseRatingDialog}>
@@ -381,11 +386,11 @@ const navigate = useNavigate();
                  </Typography>
               {/* Reviews Section */}
               {reviews && reviews.length > 0 && (
-                  <div className="mt-4 flex flex-col items-center justify-center">
+                  <div className="mt-4 flex flex-col">
             {reviews
               .filter((review) => review.propertyId._id === selectedProperty._id)
               .map((review) => (
-                <div key={review._id} className="mt-2 p-2 bg-gray-100 rounded-lg flex items-center justify-between gap-4">
+                <div key={review._id} className="p-2 bg-gray-100 flex justify-between rounded-lg my-2">
                                 <div>
                   <Typography className="font-bold text-gray-600">My Review:</Typography>
                   <div className="flex items-center">

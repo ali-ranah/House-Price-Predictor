@@ -19,6 +19,7 @@ const Signup = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -41,6 +42,7 @@ const Signup = () => {
             setFormData({ ...formData, error: 'Passwords do not match' });
         } else {
             try {
+                setLoading(true);
                 // Send the form data to the backend
                 const response = await AxiosRequest.post('/api/signup', {
                     name: formData.name,
@@ -48,25 +50,19 @@ const Signup = () => {
                     password: formData.password
                 });
                 if (response.status === 201) {
-                    console.log('Signup successful:', response.data);
-                    // Show success toast
-                    toast.success('Signup successful');
-                    setTimeout(()=>
-                        {
-                            navigate('/login');
-                        },2000)
-                    // Optionally, you can redirect the user to a different page upon successful signup
+                    toast.success(response.data.message);
+                    setFormData({
+                            name: '',
+                            email: '',
+                            password: '',
+                            confirmPassword: '',
+                            error: ''
+                        })                 
                 }
             } catch (error) {
-                if (error.response && error.response.status === 409) {
-                    // If username or email already exists, show error toast
-                    toast.error('Email already exists');
-                } else {
-                    console.error('Signup failed:', error.response.data);
-                    // Show error toast
-                    toast.error('Signup failed');
-                }
-                // Handle other error responses from the server
+                    toast.error(error.response.data.message);
+            }finally{
+                setLoading(false);
             }
         }
     };
@@ -112,8 +108,11 @@ const Signup = () => {
                                 </div>
                             </div>
                             {formData.error && <p className="error-message">{formData.error}</p>}
-                            <Button type="submit" className="bg-black text-white py-4 shadow-none rounded-lg hover:shadow-gray-500 hover:shadow-md">Sign Up</Button>
+                            <Button type="submit" disabled={loading} className="bg-black text-white py-4 shadow-none rounded-lg hover:shadow-gray-500 hover:shadow-md">
+                            {loading ? "Sign Up in Progress" : "Sign Up"}
+                            </Button>
                         </form>
+                        <p className="text-center text-gray-500 mt-6">Already have an account? <span className="text-blue-700 cursor-pointer" onClick={() => navigate('/login')}>Login In</span></p>
                     </div>
                 </section>
             </div>

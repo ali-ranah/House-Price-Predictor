@@ -119,7 +119,8 @@ const CreateListing = () => {
   
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-[#FEF9F2]">
+    <div className="flex flex-col min-h-screen bg-[#f8f9fa]">
+    <div className="flex justify-center items-center min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -127,9 +128,9 @@ const CreateListing = () => {
         className="max-w-lg w-full p-6"
       >
        <Card className="p-8 min-w-screen shadow-lg shadow-black rounded-lg bg-white transform transition duration-300 hover:-translate-y-2 hover:shadow-3xl">
-          <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
+      <Typography variant="h4" className="text-center py-4 text-gray-800 font-semibold">
             List Property for Sale
-          </h2>
+          </Typography>
 
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
@@ -313,9 +314,7 @@ const CreateListing = () => {
             >
               <Button
                 type="submit"
-                color="blue"
-                ripple="light"
-                fullWidth
+                className="bg-black text-white py-4 shadow-none rounded-lg hover:shadow-gray-500 hover:shadow-md"
                 disabled={loading}
               >
                 {loading ? "Listing..." : "List Property"}
@@ -343,6 +342,7 @@ const CreateListing = () => {
           </div>
         </DialogBody>
       </Dialog>
+    </div>
     </div>
   );
 };
