@@ -26,8 +26,8 @@ exports.sendMessage = async (req, res) => {
             timestamp: Date.now()
         });
 
-        await newMessage.populate('sender', 'name email');
-        await newMessage.populate('receiver', 'name email');
+        await newMessage.populate('sender', 'name email picture');
+        await newMessage.populate('receiver', 'name email picture');
 
         res.status(201).json({ message: 'Message sent successfully', newMessage });
     } catch (error) {
@@ -58,8 +58,8 @@ exports.getMessages = async (req, res) => {
           { conversationId: conversationId2, propertyId: propertyId }
         ]
       })
-        .populate('sender', 'name email')
-        .populate('receiver', 'name email');
+        .populate('sender', 'name email picture')
+        .populate('receiver', 'name email picture');
   
       // Mark all messages as seen by the receiver
       await Message.updateMany(

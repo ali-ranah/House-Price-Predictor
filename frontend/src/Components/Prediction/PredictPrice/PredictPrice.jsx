@@ -125,12 +125,6 @@ const handleNumericInputChange = (setter) => (e) => {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {/* <Input
-              placeholder="Location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="mb-4"
-            /> */}
             <select
               value={location}
               onChange={(e) => setLocation(e.target.value)}

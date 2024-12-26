@@ -67,7 +67,7 @@ exports.login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid password' });
         }
         // Generate JWT token
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '7d' });
         console.log(token);
         res.status(200).json({ user, token });
     } catch (error) {
@@ -117,7 +117,21 @@ exports.googleLogin = async (req, res) => {
 exports.getUserInfo = async (req, res) => {
     try {
         const userId = req.user.userId;
-        const user = await User.findById(userId).select('name email picture');
+        const user = await User.findById(userId).select('name email picture createdAt');
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};
+
+exports.getReceiverInfo = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('name email picture createdAt');
 
         if (!user) {
             return res.status(404).json({ message: 'User not found' });

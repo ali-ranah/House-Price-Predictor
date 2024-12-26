@@ -353,7 +353,7 @@ const MyProperties = () => {
                       disabled={acceptBid || rejectBid}
                       onClick={() => handleAcceptBid(selectedProperty._id, bid._id)}
                     >
-                    {acceptBid ? "Accepting..." : "Accept"}
+                    Accept
                     </Button>
                     <Button
                       size="sm"
@@ -361,7 +361,7 @@ const MyProperties = () => {
                       disabled={rejectBid || acceptBid}
                       onClick={() => handleRejectBid(selectedProperty._id, bid._id)}
                     >
-                    {rejectBid ? "Rejecting..." : "Reject"}                                    
+                    Reject                                
                     </Button>
                   </div>
                   )}

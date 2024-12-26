@@ -39,6 +39,7 @@ const MyBids = () => {
   const [existingReview, setExistingReview] = useState(false);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
+  const userId = localStorage.getItem('userId');
 const navigate = useNavigate();
 
   useEffect(() => {
@@ -249,7 +250,7 @@ const navigate = useNavigate();
                      {property.price} PKR
                    </Typography>
                    <div className="flex items-center space-x-2">
-                     {property.bids.find(bid => bid.status === 'accepted')&&(
+                     {property.buyer === userId &&(
                      <div className="relative">
                        <img
                          src={chatIcon}
@@ -272,7 +273,7 @@ const navigate = useNavigate();
                          )}
                      </div>
                      )}
-{property.bids.find((bid) => bid.status === "accepted") && (
+{property.buyer === userId && (
   <StarIcon
     className="h-6 w-6 text-gray-500 hover:text-blue-500 cursor-pointer transition-transform duration-300 hover:scale-110"
     onClick={() => handleOpenRatingDialog(property)}

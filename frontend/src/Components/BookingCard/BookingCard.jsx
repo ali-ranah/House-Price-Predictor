@@ -124,7 +124,7 @@ const BookingCard = () => {
 
   return (
     <div>      
-      <Typography variant='h3' className='mb-3 text-black'>Listed Property</Typography>
+      {/* <Typography variant='h3' className='mb-3 text-black'>Listed Property</Typography> */}
       {properties.length ===0 &&(
               <div className='flex items-center p-6 justify-center'>
               <Typography variant='h4' className='text-center text-gray-500'>No properties found</Typography>
@@ -133,33 +133,43 @@ const BookingCard = () => {
     <div className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
       {properties.length > 0 && (
       properties.map((property) => (
-        <Card key={property._id} className="w-full max-w-[26rem] shadow-lg shadow-black rounded-lg bg-white transform transition duration-300 hover:-translate-y-2 hover:shadow-3xl">
+        <Card key={property._id} className="transition-shadow shadow-black duration-300 shadow-lg rounded-lg"
+>
           <CardHeader floated={false}>
             <img
               src={property.imageUrl || 'default-image.jpg'} // Use a default image if imageUrl is missing
               alt={property.title}
-              className="w-72 h-48 object-cover"
+              className="w-full h-48 object-cover"
             />
             <div className="to-bg-black-10 absolute inset-0 h-full w-full bg-gradient-to-tr from-transparent via-transparent to-black/60" />
           </CardHeader>
-          <CardBody>
-            <div>
+           <CardBody className="px-4 py-3">
+           <div className='flex items-center justify-center'>
             <Typography variant='small' color="gray" >
             {new Date(property.dateListed).toLocaleDateString()}
             </Typography>
             </div>
-            <div className="mb-3 flex items-center justify-between">
-              <Typography variant="h5" color="blue-gray" className="font-medium">
-                {property.title}
-              </Typography>
-              <Typography color="blue-gray" className="flex items-center gap-1.5 font-normal">
-                {property.price} PKR
-              </Typography>
-            </div>
-            <Typography color="gray">
-              {property.description}
-            </Typography>
-          </CardBody>
+            <div className="pt-0 flex flex-col"> {/* Use flex column */}
+  <div className="flex justify-between items-start"> {/* Title and Price row */}
+    <div> {/* Title container */}
+      <Typography variant="h5" className="font-bold text-gray-800">
+        {property.title}
+      </Typography>
+    </div>
+    <div className="flex items-end"> {/* Price container */}
+      <Typography className="font-semibold text-blue-600">
+        {property.price} PKR
+      </Typography>
+    </div>
+  </div>
+  <Typography color="blue-gray" className="text-sm"> {/* Location full width */}
+    Location: {property.location}
+  </Typography>
+  <Typography color="gray" className="text-sm my-2"> {/* Description full width */}
+    {property.description}
+  </Typography>
+</div>
+                 </CardBody>
           <CardFooter className="pt-0 flex justify-between">
             <Button size="sm" color="blue" className="text-white shadow-none rounded-lg hover:shadow-gray-500 hover:shadow-md" onClick={() => handleOpenDialog(property)}>
               Read More

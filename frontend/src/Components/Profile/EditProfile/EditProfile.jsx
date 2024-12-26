@@ -13,6 +13,8 @@ import { uploadImageToCloudinary } from "../../utility/uploadImageToCloudinary"
 import AxiosRequest from "../../AxiosRequest/AxiosRequest";
 import { useSelector } from "react-redux"
 import { selectToken } from '../../State/Reducers/tokenSlice';
+import { motion } from "framer-motion";
+
 
 export default function EditProfile() {
   const [name, setName] = useState("")
@@ -139,7 +141,13 @@ export default function EditProfile() {
   return (
     <div className="w-full bg-white">
       <div className="min-h-screen flex items-center justify-center min-w-screen">
-        <Card className="w-full max-w-lg mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="max-w-lg w-full p-6"
+      >
+      <Card className="w-full max-w-lg mx-auto shadow-lg shadow-black rounded-lg bg-white transform transition duration-300 hover:-translate-y-2 hover:shadow-3xl">
           <CardHeader>
             <CardTitle className='text-center'>Edit Profile</CardTitle>
             <CardDescription className='text-center'>Manage your profile information and preferences</CardDescription>
@@ -270,6 +278,7 @@ export default function EditProfile() {
         <Button onClick={handleSubmit} disabled={!isChanged} className="ml-auto">Save Changes</Button>
       </CardFooter>
         </Card>
+        </motion.div>
       </div>
     </div>
   )

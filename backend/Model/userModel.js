@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema({
     verificationCodeExpiry: {
         type: Date,
         default: null
+    },
+    createdAt:{
+        type: Date,
+        default: Date.now
     }
 });
 
